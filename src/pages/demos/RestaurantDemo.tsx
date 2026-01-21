@@ -1,6 +1,6 @@
 import BackToShowcase from "@/components/BackToShowcase";
 import { Button } from "@/components/ui/button";
-import { Clock, MapPin, Phone, Calendar, ChefHat, Wine, Star, X } from "lucide-react";
+import { Clock, MapPin, Phone, Calendar, ChefHat, Wine, Star, Gift, Users, Utensils, Info } from "lucide-react";
 import { useState } from "react";
 import {
   Dialog,
@@ -71,6 +71,12 @@ const RestaurantDemo = () => {
     phone: "",
     email: "",
   });
+  
+  // Footer dialogs
+  const [giftCardOpen, setGiftCardOpen] = useState(false);
+  const [eventsOpen, setEventsOpen] = useState(false);
+  const [aboutOpen, setAboutOpen] = useState(false);
+  const [giftCardForm, setGiftCardForm] = useState({ amount: "", name: "", email: "" });
 
   const handleBookingSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -342,10 +348,150 @@ const RestaurantDemo = () => {
         </div>
       </section>
 
+      {/* Gift Card Dialog */}
+      <Dialog open={giftCardOpen} onOpenChange={setGiftCardOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <div className="flex items-center gap-3">
+              <Gift className="h-6 w-6 text-primary" />
+              <DialogTitle>Presentkort</DialogTitle>
+            </div>
+            <DialogDescription>Ge bort en kulinarisk upplevelse</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 mt-4">
+            <div className="space-y-2">
+              <Label>Välj värde</Label>
+              <div className="grid grid-cols-3 gap-2">
+                {["500", "1000", "2000"].map((amount) => (
+                  <button
+                    key={amount}
+                    onClick={() => setGiftCardForm({ ...giftCardForm, amount })}
+                    className={`py-3 px-4 rounded-lg border text-center font-medium transition-colors ${
+                      giftCardForm.amount === amount
+                        ? "border-primary bg-primary/10 text-primary"
+                        : "border-border hover:border-primary/50"
+                    }`}
+                  >
+                    {amount} kr
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="gift-name">Ditt namn</Label>
+              <Input
+                id="gift-name"
+                value={giftCardForm.name}
+                onChange={(e) => setGiftCardForm({ ...giftCardForm, name: e.target.value })}
+                placeholder="Ditt namn"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="gift-email">Din e-post</Label>
+              <Input
+                id="gift-email"
+                type="email"
+                value={giftCardForm.email}
+                onChange={(e) => setGiftCardForm({ ...giftCardForm, email: e.target.value })}
+                placeholder="din@email.se"
+              />
+            </div>
+            <Button 
+              className="w-full" 
+              onClick={() => {
+                if (!giftCardForm.amount || !giftCardForm.name || !giftCardForm.email) {
+                  toast.error("Vänligen fyll i alla fält");
+                  return;
+                }
+                toast.success(`Presentkort på ${giftCardForm.amount} kr skickas till ${giftCardForm.email}!`);
+                setGiftCardOpen(false);
+                setGiftCardForm({ amount: "", name: "", email: "" });
+              }}
+            >
+              Köp presentkort
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Events Dialog */}
+      <Dialog open={eventsOpen} onOpenChange={setEventsOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <div className="flex items-center gap-3">
+              <Users className="h-6 w-6 text-primary" />
+              <DialogTitle>Evenemang & Sällskap</DialogTitle>
+            </div>
+            <DialogDescription>Fira med oss på Bella Cucina</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-6 mt-4">
+            <div>
+              <h4 className="font-semibold text-foreground mb-2">Privata evenemang</h4>
+              <p className="text-sm text-muted-foreground">
+                Vårt separata rum rymmer upp till 25 gäster och passar perfekt för 
+                födelsedagar, firmafester eller andra speciella tillfällen.
+              </p>
+            </div>
+            <div>
+              <h4 className="font-semibold text-foreground mb-2">Större sällskap</h4>
+              <p className="text-sm text-muted-foreground">
+                För sällskap på 8-15 personer erbjuder vi specialmenyer anpassade efter era önskemål. 
+                Kontakta oss för skräddarsydda förslag.
+              </p>
+            </div>
+            <div>
+              <h4 className="font-semibold text-foreground mb-2">Vinprovning</h4>
+              <p className="text-sm text-muted-foreground">
+                Låt vår sommelier guida er genom utvalda viner från vår vinkällare. 
+                Perfekt för en kväll med vänner eller kollegor.
+              </p>
+            </div>
+            <Button 
+              className="w-full" 
+              onClick={() => {
+                setEventsOpen(false);
+                setBookingOpen(true);
+              }}
+            >
+              <Calendar className="mr-2 h-4 w-4" />
+              Kontakta oss för bokning
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* About Dialog */}
+      <Dialog open={aboutOpen} onOpenChange={setAboutOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <div className="flex items-center gap-3">
+              <Utensils className="h-6 w-6 text-primary" />
+              <DialogTitle>Om Bella Cucina</DialogTitle>
+            </div>
+          </DialogHeader>
+          <div className="space-y-4 mt-4 text-muted-foreground">
+            <p>
+              Bella Cucina grundades 1987 av familjen Rossi, som flyttade från den lilla byn 
+              Montepulciano i Toscana till Stockholm med drömmen om att dela sin passion för 
+              autentisk italiensk mat.
+            </p>
+            <p>
+              Idag drivs restaurangen av andra generationen Rossi, men principerna är desamma: 
+              färska, lokala råvaror när det är möjligt, importerade specialiteter från Italien 
+              när det krävs, och handgjord pasta varje dag.
+            </p>
+            <p>
+              Vår vinkällare innehåller över 120 noggrant utvalda viner, främst från italienska 
+              familjeproducenter som vi har personliga relationer med.
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Footer */}
       <footer className="bg-foreground text-background py-12">
         <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-4 gap-8">
             <div>
               <h3 className="text-xl font-bold">Bella Cucina</h3>
               <p className="mt-2 text-background/70 text-sm">Autentisk italiensk matlagning sedan 1987</p>
@@ -354,6 +500,15 @@ const RestaurantDemo = () => {
               <h4 className="font-semibold mb-3">Öppettider</h4>
               <p className="text-sm text-background/70">Måndag - Lördag: 17:00 - 23:00</p>
               <p className="text-sm text-background/70">Söndag: Stängt</p>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-3">Information</h4>
+              <ul className="space-y-2 text-sm text-background/70">
+                <li><button onClick={() => setAboutOpen(true)} className="hover:text-background">Om oss</button></li>
+                <li><button onClick={() => setMenuOpen(true)} className="hover:text-background">Meny</button></li>
+                <li><button onClick={() => setGiftCardOpen(true)} className="hover:text-background">Presentkort</button></li>
+                <li><button onClick={() => setEventsOpen(true)} className="hover:text-background">Evenemang</button></li>
+              </ul>
             </div>
             <div>
               <h4 className="font-semibold mb-3">Kontakt</h4>
