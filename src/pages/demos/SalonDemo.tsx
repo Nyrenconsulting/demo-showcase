@@ -1,6 +1,17 @@
 import BackToShowcase from "@/components/BackToShowcase";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, MapPin, Phone, Scissors, Sparkles, Star } from "lucide-react";
+import { Calendar, Clock, MapPin, Phone, Scissors, Sparkles, Star, ArrowLeft, ArrowRight, Check } from "lucide-react";
+import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 
 const services = [
   { name: "Damklippning", price: "från 595 kr", duration: "60 min", description: "Konsultation, klippning och styling" },
@@ -17,10 +28,290 @@ const team = [
   { name: "Sofia Nilsson", role: "Color Specialist", image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&q=80" },
 ];
 
+const availableTimes = ["10:00", "10:30", "11:00", "11:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00"];
+
 const SalonDemo = () => {
+  const [bookingOpen, setBookingOpen] = useState(false);
+  const [phoneDialogOpen, setPhoneDialogOpen] = useState(false);
+  const [bookingStep, setBookingStep] = useState(1);
+  const [selectedService, setSelectedService] = useState<string | null>(null);
+  const [selectedStylist, setSelectedStylist] = useState<string | null>(null);
+  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  const [contactForm, setContactForm] = useState({ name: "", phone: "", email: "" });
+
+  const openBookingWithService = (serviceName: string) => {
+    setSelectedService(serviceName);
+    setBookingStep(2);
+    setBookingOpen(true);
+  };
+
+  const openBooking = () => {
+    setBookingStep(1);
+    setBookingOpen(true);
+  };
+
+  const resetBooking = () => {
+    setSelectedService(null);
+    setSelectedStylist(null);
+    setSelectedDate("");
+    setSelectedTime(null);
+    setContactForm({ name: "", phone: "", email: "" });
+    setBookingStep(1);
+  };
+
+  const handleBookingClose = (open: boolean) => {
+    if (!open) {
+      resetBooking();
+    }
+    setBookingOpen(open);
+  };
+
+  const handleBookingSubmit = () => {
+    if (!contactForm.name || !contactForm.phone) {
+      toast.error("Vänligen fyll i namn och telefonnummer");
+      return;
+    }
+    toast.success(
+      `Tack ${contactForm.name}! Din bokning för ${selectedService} med ${selectedStylist} den ${selectedDate} kl ${selectedTime} är bekräftad!`
+    );
+    handleBookingClose(false);
+  };
+
+  const nextStep = () => {
+    if (bookingStep === 1 && !selectedService) {
+      toast.error("Välj en tjänst för att fortsätta");
+      return;
+    }
+    if (bookingStep === 2 && !selectedStylist) {
+      toast.error("Välj en stylist för att fortsätta");
+      return;
+    }
+    if (bookingStep === 3 && (!selectedDate || !selectedTime)) {
+      toast.error("Välj datum och tid för att fortsätta");
+      return;
+    }
+    setBookingStep(bookingStep + 1);
+  };
+
+  const prevStep = () => {
+    setBookingStep(bookingStep - 1);
+  };
+
   return (
     <div className="min-h-screen bg-background pt-14">
       <BackToShowcase demoName="Studio Elegance - Salong" />
+
+      {/* Booking Dialog */}
+      <Dialog open={bookingOpen} onOpenChange={handleBookingClose}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Boka tid</DialogTitle>
+            <DialogDescription>
+              Steg {bookingStep} av 4 - {
+                bookingStep === 1 ? "Välj tjänst" :
+                bookingStep === 2 ? "Välj stylist" :
+                bookingStep === 3 ? "Välj datum och tid" :
+                "Dina uppgifter"
+              }
+            </DialogDescription>
+          </DialogHeader>
+
+          {/* Progress indicator */}
+          <div className="flex gap-2 mt-2">
+            {[1, 2, 3, 4].map((step) => (
+              <div
+                key={step}
+                className={`h-1.5 flex-1 rounded-full transition-colors ${
+                  step <= bookingStep ? "bg-primary" : "bg-muted"
+                }`}
+              />
+            ))}
+          </div>
+
+          <div className="mt-6">
+            {/* Step 1: Select Service */}
+            {bookingStep === 1 && (
+              <div className="space-y-3">
+                {services.map((service) => (
+                  <button
+                    key={service.name}
+                    onClick={() => setSelectedService(service.name)}
+                    className={`w-full p-4 rounded-lg border text-left transition-colors ${
+                      selectedService === service.name
+                        ? "border-primary bg-primary/5"
+                        : "border-border hover:border-primary/50"
+                    }`}
+                  >
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h4 className="font-medium text-foreground">{service.name}</h4>
+                        <p className="text-sm text-muted-foreground">{service.description}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-semibold text-primary">{service.price}</p>
+                        <p className="text-xs text-muted-foreground">{service.duration}</p>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Step 2: Select Stylist */}
+            {bookingStep === 2 && (
+              <div className="grid grid-cols-3 gap-4">
+                {team.map((member) => (
+                  <button
+                    key={member.name}
+                    onClick={() => setSelectedStylist(member.name)}
+                    className={`p-4 rounded-lg border text-center transition-colors ${
+                      selectedStylist === member.name
+                        ? "border-primary bg-primary/5"
+                        : "border-border hover:border-primary/50"
+                    }`}
+                  >
+                    <div className="w-16 h-16 rounded-full overflow-hidden mx-auto mb-2">
+                      <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
+                    </div>
+                    <p className="font-medium text-foreground text-sm">{member.name}</p>
+                    <p className="text-xs text-muted-foreground">{member.role}</p>
+                    {selectedStylist === member.name && (
+                      <Check className="h-4 w-4 text-primary mx-auto mt-1" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Step 3: Select Date and Time */}
+            {bookingStep === 3 && (
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="date">Välj datum</Label>
+                  <Input
+                    id="date"
+                    type="date"
+                    value={selectedDate}
+                    onChange={(e) => setSelectedDate(e.target.value)}
+                  />
+                </div>
+                {selectedDate && (
+                  <div className="space-y-2">
+                    <Label>Välj tid</Label>
+                    <div className="grid grid-cols-4 gap-2">
+                      {availableTimes.map((time) => (
+                        <button
+                          key={time}
+                          onClick={() => setSelectedTime(time)}
+                          className={`py-2 px-3 rounded-md text-sm font-medium transition-colors ${
+                            selectedTime === time
+                              ? "bg-primary text-primary-foreground"
+                              : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                          }`}
+                        >
+                          {time}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Step 4: Contact Details */}
+            {bookingStep === 4 && (
+              <div className="space-y-4">
+                <div className="p-4 rounded-lg bg-secondary/50 mb-4">
+                  <h4 className="font-medium text-foreground mb-2">Din bokning</h4>
+                  <p className="text-sm text-muted-foreground">Tjänst: <span className="text-foreground">{selectedService}</span></p>
+                  <p className="text-sm text-muted-foreground">Stylist: <span className="text-foreground">{selectedStylist}</span></p>
+                  <p className="text-sm text-muted-foreground">Datum: <span className="text-foreground">{selectedDate} kl {selectedTime}</span></p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="name">Namn *</Label>
+                  <Input
+                    id="name"
+                    value={contactForm.name}
+                    onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
+                    placeholder="Ditt namn"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Telefon *</Label>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    value={contactForm.phone}
+                    onChange={(e) => setContactForm({ ...contactForm, phone: e.target.value })}
+                    placeholder="07X XXX XX XX"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">E-post (valfritt)</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={contactForm.email}
+                    onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
+                    placeholder="din@email.se"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Navigation buttons */}
+          <div className="flex justify-between mt-6">
+            {bookingStep > 1 ? (
+              <Button variant="outline" onClick={prevStep}>
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Tillbaka
+              </Button>
+            ) : (
+              <div />
+            )}
+            {bookingStep < 4 ? (
+              <Button onClick={nextStep}>
+                Nästa
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            ) : (
+              <Button onClick={handleBookingSubmit}>
+                <Check className="mr-2 h-4 w-4" />
+                Bekräfta bokning
+              </Button>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Phone Dialog */}
+      <Dialog open={phoneDialogOpen} onOpenChange={setPhoneDialogOpen}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Ring oss</DialogTitle>
+            <DialogDescription>
+              Vi svarar måndag-fredag 10:00-19:00 och lördag 10:00-16:00.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col items-center py-6">
+            <Phone className="h-12 w-12 text-primary mb-4" />
+            <a
+              href="tel:08-76543210"
+              className="text-2xl font-bold text-foreground hover:text-primary transition-colors"
+            >
+              08-765 432 10
+            </a>
+          </div>
+          <Button asChild className="w-full">
+            <a href="tel:08-76543210">
+              <Phone className="mr-2 h-4 w-4" />
+              Ring nu
+            </a>
+          </Button>
+        </DialogContent>
+      </Dialog>
 
       {/* Hero */}
       <section className="relative h-[60vh] min-h-[450px] flex items-center justify-center overflow-hidden">
@@ -36,7 +327,7 @@ const SalonDemo = () => {
           <Scissors className="h-12 w-12 mx-auto mb-4 text-background/80" />
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight">Studio Elegance</h1>
           <p className="mt-4 text-xl text-background/80">Din destination för skönhet och välmående</p>
-          <Button size="lg" className="mt-8">
+          <Button size="lg" className="mt-8" onClick={openBooking}>
             <Calendar className="mr-2 h-5 w-5" />
             Boka tid
           </Button>
@@ -55,10 +346,13 @@ const SalonDemo = () => {
               <MapPin className="h-4 w-4" />
               <span>Drottninggatan 45, Stockholm</span>
             </div>
-            <div className="flex items-center gap-2 text-secondary-foreground">
+            <button
+              onClick={() => setPhoneDialogOpen(true)}
+              className="flex items-center gap-2 text-secondary-foreground hover:text-primary transition-colors"
+            >
               <Phone className="h-4 w-4" />
               <span>08-765 432 10</span>
-            </div>
+            </button>
           </div>
         </div>
       </section>
@@ -121,6 +415,14 @@ const SalonDemo = () => {
                 </div>
                 <p className="mt-2 text-sm text-muted-foreground">{service.description}</p>
                 <p className="mt-4 text-lg font-bold text-primary">{service.price}</p>
+                <Button
+                  variant="outline"
+                  className="w-full mt-4"
+                  onClick={() => openBookingWithService(service.name)}
+                >
+                  <Calendar className="mr-2 h-4 w-4" />
+                  Boka denna tjänst
+                </Button>
               </div>
             ))}
           </div>
@@ -146,6 +448,17 @@ const SalonDemo = () => {
                 </div>
                 <h3 className="mt-4 text-lg font-semibold text-foreground">{member.name}</h3>
                 <p className="text-sm text-muted-foreground">{member.role}</p>
+                <Button
+                  variant="link"
+                  className="mt-2"
+                  onClick={() => {
+                    setSelectedStylist(member.name);
+                    setBookingStep(1);
+                    setBookingOpen(true);
+                  }}
+                >
+                  Boka tid med {member.name.split(" ")[0]}
+                </Button>
               </div>
             ))}
           </div>
@@ -160,11 +473,16 @@ const SalonDemo = () => {
             Låt oss hjälpa dig att hitta din bästa look. Boka enkelt online eller ring oss.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
-            <Button size="lg" variant="secondary">
+            <Button size="lg" variant="secondary" onClick={openBooking}>
               <Calendar className="mr-2 h-5 w-5" />
               Boka online
             </Button>
-            <Button size="lg" variant="outline" className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground/10">
+            <Button
+              size="lg"
+              variant="outline"
+              className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground/10"
+              onClick={() => setPhoneDialogOpen(true)}
+            >
               <Phone className="mr-2 h-5 w-5" />
               Ring oss
             </Button>
@@ -190,7 +508,7 @@ const SalonDemo = () => {
               <h4 className="font-semibold mb-3">Kontakt</h4>
               <p className="text-sm text-background/70">Drottninggatan 45, 111 21 Stockholm</p>
               <p className="text-sm text-background/70">hello@studioelegance.se</p>
-              <p className="text-sm text-background/70">08-765 432 10</p>
+              <a href="tel:08-76543210" className="text-sm text-background/70 hover:text-background">08-765 432 10</a>
             </div>
           </div>
         </div>

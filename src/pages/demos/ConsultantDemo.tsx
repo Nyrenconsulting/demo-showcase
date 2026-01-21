@@ -1,27 +1,81 @@
 import BackToShowcase from "@/components/BackToShowcase";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, BarChart3, Lightbulb, Users, Target, CheckCircle, Mail, Phone, MapPin } from "lucide-react";
+import { ArrowRight, BarChart3, Lightbulb, Users, Target, CheckCircle, Mail, Phone, MapPin, X } from "lucide-react";
+import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { toast } from "sonner";
 
-const services = [
+interface Service {
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  description: string;
+  details: string[];
+}
+
+const services: Service[] = [
   { 
     icon: BarChart3, 
     title: "Strategirådgivning", 
-    description: "Vi hjälper er att formulera och implementera en affärsstrategi som driver tillväxt och lönsamhet."
+    description: "Vi hjälper er att formulera och implementera en affärsstrategi som driver tillväxt och lönsamhet.",
+    details: [
+      "Strategisk analys och marknadsundersökning",
+      "Affärsmodellsutveckling",
+      "Konkurrensanalys och positionering",
+      "Tillväxtstrategi och skalning",
+      "Implementeringsstöd och uppföljning",
+    ]
   },
   { 
     icon: Lightbulb, 
     title: "Digital transformation", 
-    description: "Modernisera er verksamhet med rätt teknologi och processer för att möta framtidens utmaningar."
+    description: "Modernisera er verksamhet med rätt teknologi och processer för att möta framtidens utmaningar.",
+    details: [
+      "Digital mognadsbedömning",
+      "Teknologistrategi och roadmap",
+      "Processautomatisering",
+      "Data & Analytics-strategi",
+      "Change management och kompetensutveckling",
+    ]
   },
   { 
     icon: Users, 
     title: "Organisationsutveckling", 
-    description: "Bygg en högpresterande organisation med rätt struktur, kultur och ledarskap."
+    description: "Bygg en högpresterande organisation med rätt struktur, kultur och ledarskap.",
+    details: [
+      "Organisationsdesign och struktur",
+      "Kultur- och värdegrundsarbete",
+      "Ledarskapsutveckling",
+      "Talent management",
+      "Teamutveckling och samarbete",
+    ]
   },
   { 
     icon: Target, 
     title: "Affärsutveckling", 
-    description: "Identifiera nya marknader och affärsmöjligheter för att accelerera er tillväxt."
+    description: "Identifiera nya marknader och affärsmöjligheter för att accelerera er tillväxt.",
+    details: [
+      "Marknadsexpansion och internationalisering",
+      "Partnerskap och allianser",
+      "M&A-rådgivning och due diligence",
+      "Nya affärsmodeller och intäktsströmmar",
+      "Innovationsledning",
+    ]
   },
 ];
 
@@ -31,16 +85,266 @@ const team = [
   { name: "Erik Johansson", role: "Senior Consultant", image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&q=80", bio: "Specialist på organisationsförändring" },
 ];
 
-const caseStudies = [
-  { client: "TechCorp AB", industry: "Tech", result: "+45% omsättningstillväxt", description: "Strategisk omställning och digital expansion" },
-  { client: "Nordic Retail", industry: "Retail", result: "30% kostnadsreduktion", description: "Operationell effektivisering och processoptimering" },
-  { client: "HealthPlus", industry: "Healthcare", result: "Ny marknadsledare", description: "Go-to-market strategi för ny produktlansering" },
+interface CaseStudy {
+  client: string;
+  industry: string;
+  result: string;
+  description: string;
+  challenge: string;
+  solution: string;
+  quote?: string;
+}
+
+const caseStudies: CaseStudy[] = [
+  { 
+    client: "TechCorp AB", 
+    industry: "Tech", 
+    result: "+45% omsättningstillväxt", 
+    description: "Strategisk omställning och digital expansion",
+    challenge: "TechCorp stod inför ökad konkurrens från internationella aktörer och behövde snabbt ompositionera sig på marknaden för att behålla sin ledande position.",
+    solution: "Vi genomförde en omfattande strategisk analys och utvecklade en ny Go-to-Market-strategi med fokus på premium-segment och nya digitala tjänster. Implementeringen inkluderade organisationsförändringar och ett nytt säljupplägg.",
+    quote: "Bergström Consulting hjälpte oss att se våra utmaningar från ett helt nytt perspektiv. Deras insikter och pragmatiska approach var avgörande för vår framgång. - CEO, TechCorp AB"
+  },
+  { 
+    client: "Nordic Retail", 
+    industry: "Retail", 
+    result: "30% kostnadsreduktion", 
+    description: "Operationell effektivisering och processoptimering",
+    challenge: "Nordic Retail hade under flera år sett sjunkande marginaler och behövde optimera sin verksamhet utan att kompromissa på kundupplevelsen.",
+    solution: "Vi identifierade ineffektiviteter i hela värdekedjan och implementerade lean-principer i logistik och lagerhållning. Dessutom automatiserades flera administrativa processer.",
+    quote: "Resultaten överträffade våra förväntningar. Vi sparade inte bara pengar utan förbättrade även vår kundnöjdhet. - COO, Nordic Retail"
+  },
+  { 
+    client: "HealthPlus", 
+    industry: "Healthcare", 
+    result: "Ny marknadsledare", 
+    description: "Go-to-market strategi för ny produktlansering",
+    challenge: "HealthPlus hade utvecklat en innovativ produkt men saknade erfarenhet av att lansera på B2B-marknaden för sjukvård.",
+    solution: "Vi utvecklade en komplett GTM-strategi inklusive prissättning, kanalstrategi och kommunikationsplan. Vi stöttade även under själva lanseringsfasen.",
+    quote: "Från idé till marknadsledare på 18 månader – det hade inte varit möjligt utan Bergström Consulting. - Grundare, HealthPlus"
+  },
 ];
 
 const ConsultantDemo = () => {
+  const [meetingOpen, setMeetingOpen] = useState(false);
+  const [serviceOpen, setServiceOpen] = useState(false);
+  const [caseOpen, setCaseOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const [selectedCase, setSelectedCase] = useState<CaseStudy | null>(null);
+  const [meetingForm, setMeetingForm] = useState({
+    name: "",
+    company: "",
+    email: "",
+    phone: "",
+    service: "",
+    message: "",
+  });
+
+  const openServiceModal = (service: Service) => {
+    setSelectedService(service);
+    setServiceOpen(true);
+  };
+
+  const openCaseModal = (caseStudy: CaseStudy) => {
+    setSelectedCase(caseStudy);
+    setCaseOpen(true);
+  };
+
+  const handleMeetingSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!meetingForm.name || !meetingForm.email || !meetingForm.company) {
+      toast.error("Vänligen fyll i alla obligatoriska fält");
+      return;
+    }
+    toast.success(
+      `Tack ${meetingForm.name}! Vi har tagit emot din förfrågan och återkommer inom 24 timmar.`
+    );
+    setMeetingOpen(false);
+    setMeetingForm({ name: "", company: "", email: "", phone: "", service: "", message: "" });
+  };
+
+  const scrollToSection = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
     <div className="min-h-screen bg-background pt-14">
       <BackToShowcase demoName="Bergström Consulting - Konsult" />
+
+      {/* Meeting Dialog */}
+      <Dialog open={meetingOpen} onOpenChange={setMeetingOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Boka ett möte</DialogTitle>
+            <DialogDescription>
+              Fyll i formuläret så återkommer vi inom 24 timmar för att boka ett möte.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleMeetingSubmit} className="space-y-4 mt-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Namn *</Label>
+                <Input
+                  id="name"
+                  value={meetingForm.name}
+                  onChange={(e) => setMeetingForm({ ...meetingForm, name: e.target.value })}
+                  placeholder="Ditt namn"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="company">Företag *</Label>
+                <Input
+                  id="company"
+                  value={meetingForm.company}
+                  onChange={(e) => setMeetingForm({ ...meetingForm, company: e.target.value })}
+                  placeholder="Företagsnamn"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">E-post *</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={meetingForm.email}
+                  onChange={(e) => setMeetingForm({ ...meetingForm, email: e.target.value })}
+                  placeholder="din@email.se"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone">Telefon</Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  value={meetingForm.phone}
+                  onChange={(e) => setMeetingForm({ ...meetingForm, phone: e.target.value })}
+                  placeholder="07X XXX XX XX"
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="service">Intresseområde</Label>
+              <Select
+                value={meetingForm.service}
+                onValueChange={(v) => setMeetingForm({ ...meetingForm, service: v })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Välj tjänsteområde" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="strategy">Strategirådgivning</SelectItem>
+                  <SelectItem value="digital">Digital transformation</SelectItem>
+                  <SelectItem value="organization">Organisationsutveckling</SelectItem>
+                  <SelectItem value="business">Affärsutveckling</SelectItem>
+                  <SelectItem value="other">Annat</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="message">Meddelande</Label>
+              <Textarea
+                id="message"
+                value={meetingForm.message}
+                onChange={(e) => setMeetingForm({ ...meetingForm, message: e.target.value })}
+                placeholder="Beskriv kort era utmaningar eller vad ni vill diskutera..."
+                rows={4}
+              />
+            </div>
+            <Button type="submit" className="w-full">
+              Skicka förfrågan
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Service Details Dialog */}
+      <Dialog open={serviceOpen} onOpenChange={setServiceOpen}>
+        <DialogContent className="sm:max-w-lg">
+          {selectedService && (
+            <>
+              <DialogHeader>
+                <div className="flex items-center gap-3">
+                  <selectedService.icon className="h-8 w-8 text-primary" />
+                  <DialogTitle>{selectedService.title}</DialogTitle>
+                </div>
+                <DialogDescription className="text-base mt-4">
+                  {selectedService.description}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="mt-6">
+                <h4 className="font-semibold text-foreground mb-4">Vad ingår:</h4>
+                <ul className="space-y-3">
+                  {selectedService.details.map((detail, idx) => (
+                    <li key={idx} className="flex items-start gap-3">
+                      <CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                      <span className="text-muted-foreground">{detail}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <Button
+                className="w-full mt-6"
+                onClick={() => {
+                  setServiceOpen(false);
+                  setMeetingForm({ ...meetingForm, service: selectedService.title.toLowerCase() });
+                  setMeetingOpen(true);
+                }}
+              >
+                Boka möte om {selectedService.title}
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Case Study Dialog */}
+      <Dialog open={caseOpen} onOpenChange={setCaseOpen}>
+        <DialogContent className="sm:max-w-2xl">
+          {selectedCase && (
+            <>
+              <DialogHeader>
+                <span className="text-xs font-medium text-primary">{selectedCase.industry}</span>
+                <DialogTitle className="text-2xl">{selectedCase.client}</DialogTitle>
+                <DialogDescription>{selectedCase.description}</DialogDescription>
+              </DialogHeader>
+              <div className="mt-6 space-y-6">
+                <div>
+                  <h4 className="font-semibold text-foreground mb-2">Utmaning</h4>
+                  <p className="text-muted-foreground">{selectedCase.challenge}</p>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-foreground mb-2">Lösning</h4>
+                  <p className="text-muted-foreground">{selectedCase.solution}</p>
+                </div>
+                <div className="flex items-center gap-3 p-4 rounded-lg bg-primary/5">
+                  <CheckCircle className="h-8 w-8 text-primary flex-shrink-0" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">Resultat</p>
+                    <p className="text-xl font-bold text-foreground">{selectedCase.result}</p>
+                  </div>
+                </div>
+                {selectedCase.quote && (
+                  <blockquote className="border-l-4 border-primary pl-4 italic text-muted-foreground">
+                    {selectedCase.quote}
+                  </blockquote>
+                )}
+              </div>
+              <Button
+                className="w-full mt-6"
+                onClick={() => {
+                  setCaseOpen(false);
+                  setMeetingOpen(true);
+                }}
+              >
+                Kontakta oss
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Navigation */}
       <header className="sticky top-14 z-40 bg-background/95 backdrop-blur-sm border-b border-border">
@@ -48,12 +352,32 @@ const ConsultantDemo = () => {
           <div className="flex items-center justify-between">
             <h1 className="text-xl font-bold text-foreground">Bergström Consulting</h1>
             <nav className="hidden md:flex items-center gap-6 text-sm">
-              <a href="#services" className="text-muted-foreground hover:text-foreground transition-colors">Tjänster</a>
-              <a href="#team" className="text-muted-foreground hover:text-foreground transition-colors">Team</a>
-              <a href="#cases" className="text-muted-foreground hover:text-foreground transition-colors">Case</a>
-              <a href="#contact" className="text-muted-foreground hover:text-foreground transition-colors">Kontakt</a>
+              <button
+                onClick={() => scrollToSection("services")}
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Tjänster
+              </button>
+              <button
+                onClick={() => scrollToSection("team")}
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Team
+              </button>
+              <button
+                onClick={() => scrollToSection("cases")}
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Case
+              </button>
+              <button
+                onClick={() => scrollToSection("contact")}
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Kontakt
+              </button>
             </nav>
-            <Button>Boka möte</Button>
+            <Button onClick={() => setMeetingOpen(true)}>Boka möte</Button>
           </div>
         </div>
       </header>
@@ -70,11 +394,11 @@ const ConsultantDemo = () => {
               i deras viktigaste strategiska beslut.
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
-              <Button size="lg">
+              <Button size="lg" onClick={() => setMeetingOpen(true)}>
                 Kontakta oss
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-              <Button size="lg" variant="outline">
+              <Button size="lg" variant="outline" onClick={() => scrollToSection("services")}>
                 Våra tjänster
               </Button>
             </div>
@@ -125,7 +449,11 @@ const ConsultantDemo = () => {
                 <service.icon className="h-10 w-10 text-primary" />
                 <h3 className="mt-4 text-xl font-semibold text-foreground">{service.title}</h3>
                 <p className="mt-2 text-muted-foreground">{service.description}</p>
-                <Button variant="link" className="mt-4 px-0">
+                <Button
+                  variant="link"
+                  className="mt-4 px-0"
+                  onClick={() => openServiceModal(service)}
+                >
                   Läs mer <ArrowRight className="ml-1 h-4 w-4" />
                 </Button>
               </div>
@@ -178,6 +506,7 @@ const ConsultantDemo = () => {
               <div 
                 key={index}
                 className="p-8 rounded-xl border border-border bg-card hover:shadow-lg transition-shadow group cursor-pointer"
+                onClick={() => openCaseModal(caseStudy)}
               >
                 <span className="text-xs font-medium text-primary">{caseStudy.industry}</span>
                 <h3 className="mt-2 text-xl font-semibold text-foreground">{caseStudy.client}</h3>
@@ -202,7 +531,12 @@ const ConsultantDemo = () => {
           <p className="mt-4 text-primary-foreground/80 max-w-xl mx-auto">
             Kontakta oss för ett förutsättningslöst samtal om hur vi kan hjälpa ert företag.
           </p>
-          <Button size="lg" variant="secondary" className="mt-8">
+          <Button
+            size="lg"
+            variant="secondary"
+            className="mt-8"
+            onClick={() => setMeetingOpen(true)}
+          >
             Boka ett möte
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
@@ -225,11 +559,15 @@ const ConsultantDemo = () => {
               <ul className="space-y-3 text-sm text-background/70">
                 <li className="flex items-center gap-2">
                   <Mail className="h-4 w-4" />
-                  info@bergstromconsulting.se
+                  <a href="mailto:info@bergstromconsulting.se" className="hover:text-background">
+                    info@bergstromconsulting.se
+                  </a>
                 </li>
                 <li className="flex items-center gap-2">
                   <Phone className="h-4 w-4" />
-                  08-123 456 00
+                  <a href="tel:08-12345600" className="hover:text-background">
+                    08-123 456 00
+                  </a>
                 </li>
                 <li className="flex items-center gap-2">
                   <MapPin className="h-4 w-4" />
