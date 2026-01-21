@@ -1,6 +1,6 @@
 import BackToShowcase from "@/components/BackToShowcase";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, BarChart3, Lightbulb, Users, Target, CheckCircle, Mail, Phone, MapPin, X } from "lucide-react";
+import { ArrowRight, BarChart3, Lightbulb, Users, Target, CheckCircle, Mail, Phone, MapPin, Briefcase, Building, FileText, Shield, Calendar } from "lucide-react";
 import { useState } from "react";
 import {
   Dialog,
@@ -139,6 +139,12 @@ const ConsultantDemo = () => {
     service: "",
     message: "",
   });
+  
+  // Footer dialogs
+  const [aboutOpen, setAboutOpen] = useState(false);
+  const [careerOpen, setCareerOpen] = useState(false);
+  const [newsOpen, setNewsOpen] = useState(false);
+  const [privacyOpen, setPrivacyOpen] = useState(false);
 
   const openServiceModal = (service: Service) => {
     setSelectedService(service);
@@ -343,6 +349,182 @@ const ConsultantDemo = () => {
               </Button>
             </>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* About Dialog */}
+      <Dialog open={aboutOpen} onOpenChange={setAboutOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <div className="flex items-center gap-3">
+              <Building className="h-6 w-6 text-primary" />
+              <DialogTitle>Om Bergström Consulting</DialogTitle>
+            </div>
+          </DialogHeader>
+          <div className="space-y-4 mt-4">
+            <p className="text-muted-foreground">
+              Bergström Consulting grundades 2009 av Johan Bergström med visionen att leverera 
+              strategisk rådgivning av högsta kvalitet till nordiska företag.
+            </p>
+            <p className="text-muted-foreground">
+              Idag är vi ett team på över 25 konsulter med bred erfarenhet från ledande globala 
+              konsultfirmor och näringslivet. Vi kombinerar djup branschexpertis med beprövade 
+              metoder för att skapa verklig förändring.
+            </p>
+            <div className="pt-4 border-t border-border">
+              <h4 className="font-semibold text-foreground mb-2">Våra värderingar</h4>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4 text-primary" />
+                  <span><strong>Integritet</strong> – Vi sätter alltid kundens bästa först</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4 text-primary" />
+                  <span><strong>Excellens</strong> – Vi levererar konsekvent högsta kvalitet</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4 text-primary" />
+                  <span><strong>Samarbete</strong> – Vi bygger långsiktiga partnerskap</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Career Dialog */}
+      <Dialog open={careerOpen} onOpenChange={setCareerOpen}>
+        <DialogContent className="sm:max-w-lg max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <div className="flex items-center gap-3">
+              <Briefcase className="h-6 w-6 text-primary" />
+              <DialogTitle>Karriär hos oss</DialogTitle>
+            </div>
+            <DialogDescription>Bli en del av vårt team</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-6 mt-4">
+            <p className="text-muted-foreground">
+              Vi söker alltid efter talangfulla individer som vill göra skillnad. 
+              Hos oss får du möjlighet att arbeta med ledande företag och utvecklas snabbt.
+            </p>
+            <div>
+              <h4 className="font-semibold text-foreground mb-3">Öppna tjänster</h4>
+              <div className="space-y-3">
+                <div className="p-4 rounded-lg border border-border">
+                  <h5 className="font-medium text-foreground">Senior Consultant – Strategy</h5>
+                  <p className="text-sm text-muted-foreground mt-1">Stockholm • Heltid</p>
+                  <Button variant="outline" size="sm" className="mt-3" onClick={() => {
+                    toast.success("Tack för ditt intresse! Skicka din ansökan till karriar@bergstromconsulting.se");
+                  }}>
+                    Ansök nu
+                  </Button>
+                </div>
+                <div className="p-4 rounded-lg border border-border">
+                  <h5 className="font-medium text-foreground">Manager – Digital Transformation</h5>
+                  <p className="text-sm text-muted-foreground mt-1">Stockholm • Heltid</p>
+                  <Button variant="outline" size="sm" className="mt-3" onClick={() => {
+                    toast.success("Tack för ditt intresse! Skicka din ansökan till karriar@bergstromconsulting.se");
+                  }}>
+                    Ansök nu
+                  </Button>
+                </div>
+                <div className="p-4 rounded-lg border border-border">
+                  <h5 className="font-medium text-foreground">Analyst – Business Development</h5>
+                  <p className="text-sm text-muted-foreground mt-1">Stockholm • Heltid</p>
+                  <Button variant="outline" size="sm" className="mt-3" onClick={() => {
+                    toast.success("Tack för ditt intresse! Skicka din ansökan till karriar@bergstromconsulting.se");
+                  }}>
+                    Ansök nu
+                  </Button>
+                </div>
+              </div>
+            </div>
+            <div className="pt-4 border-t border-border">
+              <p className="text-sm text-muted-foreground">
+                Hittar du ingen passande tjänst? Skicka en spontanansökan till{" "}
+                <a href="mailto:karriar@bergstromconsulting.se" className="text-primary hover:underline">
+                  karriar@bergstromconsulting.se
+                </a>
+              </p>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* News Dialog */}
+      <Dialog open={newsOpen} onOpenChange={setNewsOpen}>
+        <DialogContent className="sm:max-w-lg max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <div className="flex items-center gap-3">
+              <FileText className="h-6 w-6 text-primary" />
+              <DialogTitle>Nyheter & Insikter</DialogTitle>
+            </div>
+          </DialogHeader>
+          <div className="space-y-6 mt-4">
+            <div className="pb-4 border-b border-border">
+              <span className="text-xs text-muted-foreground">15 januari 2024</span>
+              <h4 className="font-semibold text-foreground mt-1">Bergström Consulting expanderar till Norge</h4>
+              <p className="text-sm text-muted-foreground mt-2">
+                Vi är glada att meddela att vi öppnar kontor i Oslo för att bättre betjäna 
+                våra nordiska kunder. Det nya kontoret öppnar i mars 2024.
+              </p>
+            </div>
+            <div className="pb-4 border-b border-border">
+              <span className="text-xs text-muted-foreground">8 december 2023</span>
+              <h4 className="font-semibold text-foreground mt-1">Ny rapport: Digitalisering i svensk industri</h4>
+              <p className="text-sm text-muted-foreground mt-2">
+                Vår senaste studie visar att 7 av 10 svenska industriföretag planerar att 
+                öka sina digitaliseringsinvesteringar under 2024.
+              </p>
+            </div>
+            <div className="pb-4 border-b border-border">
+              <span className="text-xs text-muted-foreground">22 november 2023</span>
+              <h4 className="font-semibold text-foreground mt-1">Anna Lindqvist utnämnd till Partner</h4>
+              <p className="text-sm text-muted-foreground mt-2">
+                Vi gratulerar Anna Lindqvist som utnämnts till Partner och chef för vår 
+                Digital Transformation-praktik.
+              </p>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Privacy Dialog */}
+      <Dialog open={privacyOpen} onOpenChange={setPrivacyOpen}>
+        <DialogContent className="sm:max-w-lg max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <div className="flex items-center gap-3">
+              <Shield className="h-6 w-6 text-primary" />
+              <DialogTitle>Integritetspolicy</DialogTitle>
+            </div>
+          </DialogHeader>
+          <div className="space-y-4 mt-4 text-sm text-muted-foreground">
+            <p>
+              <strong className="text-foreground">Personuppgiftsansvarig</strong><br />
+              Bergström Consulting AB, org.nr 556123-4567, är personuppgiftsansvarig för 
+              behandlingen av dina personuppgifter.
+            </p>
+            <p>
+              <strong className="text-foreground">Vilka uppgifter samlar vi in?</strong><br />
+              Vi samlar in uppgifter som du lämnar till oss, t.ex. namn, e-post och telefonnummer 
+              när du kontaktar oss eller anmäler dig till vårt nyhetsbrev.
+            </p>
+            <p>
+              <strong className="text-foreground">Hur använder vi uppgifterna?</strong><br />
+              Vi använder dina uppgifter för att kunna kommunicera med dig, hantera din förfrågan 
+              och förbättra våra tjänster.
+            </p>
+            <p>
+              <strong className="text-foreground">Hur länge sparar vi uppgifterna?</strong><br />
+              Vi sparar dina uppgifter så länge det krävs för att uppfylla ändamålet med 
+              behandlingen, eller så länge som krävs enligt lag.
+            </p>
+            <p>
+              <strong className="text-foreground">Dina rättigheter</strong><br />
+              Du har rätt att begära tillgång till, rättelse av eller radering av dina 
+              personuppgifter. Kontakta oss på gdpr@bergstromconsulting.se.
+            </p>
+          </div>
         </DialogContent>
       </Dialog>
 
@@ -578,10 +760,10 @@ const ConsultantDemo = () => {
             <div>
               <h4 className="font-semibold mb-4">Länkar</h4>
               <ul className="space-y-2 text-sm text-background/70">
-                <li><a href="#" className="hover:text-background">Om oss</a></li>
-                <li><a href="#" className="hover:text-background">Karriär</a></li>
-                <li><a href="#" className="hover:text-background">Nyheter</a></li>
-                <li><a href="#" className="hover:text-background">Integritetspolicy</a></li>
+                <li><button onClick={() => setAboutOpen(true)} className="hover:text-background">Om oss</button></li>
+                <li><button onClick={() => setCareerOpen(true)} className="hover:text-background">Karriär</button></li>
+                <li><button onClick={() => setNewsOpen(true)} className="hover:text-background">Nyheter</button></li>
+                <li><button onClick={() => setPrivacyOpen(true)} className="hover:text-background">Integritetspolicy</button></li>
               </ul>
             </div>
           </div>

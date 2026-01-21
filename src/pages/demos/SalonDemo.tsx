@@ -1,6 +1,6 @@
 import BackToShowcase from "@/components/BackToShowcase";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, MapPin, Phone, Scissors, Sparkles, Star, ArrowLeft, ArrowRight, Check } from "lucide-react";
+import { Calendar, Clock, MapPin, Phone, Scissors, Sparkles, Star, ArrowLeft, ArrowRight, Check, Gift, XCircle, Info } from "lucide-react";
 import { useState } from "react";
 import {
   Dialog,
@@ -39,6 +39,12 @@ const SalonDemo = () => {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [contactForm, setContactForm] = useState({ name: "", phone: "", email: "" });
+  
+  // Footer dialogs
+  const [giftCardOpen, setGiftCardOpen] = useState(false);
+  const [cancellationOpen, setCancellationOpen] = useState(false);
+  const [aboutOpen, setAboutOpen] = useState(false);
+  const [giftCardForm, setGiftCardForm] = useState({ amount: "", senderName: "", recipientEmail: "" });
 
   const openBookingWithService = (serviceName: string) => {
     setSelectedService(serviceName);
@@ -490,10 +496,139 @@ const SalonDemo = () => {
         </div>
       </section>
 
+      {/* Gift Card Dialog */}
+      <Dialog open={giftCardOpen} onOpenChange={setGiftCardOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <div className="flex items-center gap-3">
+              <Gift className="h-6 w-6 text-primary" />
+              <DialogTitle>Köp presentkort</DialogTitle>
+            </div>
+            <DialogDescription>Den perfekta presenten för någon du bryr dig om</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 mt-4">
+            <div className="space-y-2">
+              <Label>Välj belopp</Label>
+              <div className="grid grid-cols-3 gap-2">
+                {["500", "1000", "1500"].map((amount) => (
+                  <button
+                    key={amount}
+                    onClick={() => setGiftCardForm({ ...giftCardForm, amount })}
+                    className={`py-3 px-4 rounded-lg border text-center font-medium transition-colors ${
+                      giftCardForm.amount === amount
+                        ? "border-primary bg-primary/10 text-primary"
+                        : "border-border hover:border-primary/50"
+                    }`}
+                  >
+                    {amount} kr
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="sender">Ditt namn</Label>
+              <Input
+                id="sender"
+                value={giftCardForm.senderName}
+                onChange={(e) => setGiftCardForm({ ...giftCardForm, senderName: e.target.value })}
+                placeholder="Ditt namn"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="recipient">Mottagarens e-post</Label>
+              <Input
+                id="recipient"
+                type="email"
+                value={giftCardForm.recipientEmail}
+                onChange={(e) => setGiftCardForm({ ...giftCardForm, recipientEmail: e.target.value })}
+                placeholder="mottagare@email.se"
+              />
+            </div>
+            <Button 
+              className="w-full" 
+              onClick={() => {
+                if (!giftCardForm.amount || !giftCardForm.senderName || !giftCardForm.recipientEmail) {
+                  toast.error("Vänligen fyll i alla fält");
+                  return;
+                }
+                toast.success(`Presentkort på ${giftCardForm.amount} kr skickat till ${giftCardForm.recipientEmail}!`);
+                setGiftCardOpen(false);
+                setGiftCardForm({ amount: "", senderName: "", recipientEmail: "" });
+              }}
+            >
+              Köp presentkort
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Cancellation Dialog */}
+      <Dialog open={cancellationOpen} onOpenChange={setCancellationOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <div className="flex items-center gap-3">
+              <XCircle className="h-6 w-6 text-primary" />
+              <DialogTitle>Avbokningspolicy</DialogTitle>
+            </div>
+          </DialogHeader>
+          <div className="space-y-4 mt-4 text-sm text-muted-foreground">
+            <p>
+              Vi förstår att planer kan ändras. Här är vår avbokningspolicy:
+            </p>
+            <ul className="space-y-2">
+              <li className="flex items-start gap-2">
+                <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                <span><strong>Mer än 24 timmar före:</strong> Kostnadsfri avbokning eller ombookning</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                <span><strong>Mindre än 24 timmar före:</strong> 50% av behandlingspriset debiteras</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                <span><strong>Utebliven ankomst:</strong> 100% av behandlingspriset debiteras</span>
+              </li>
+            </ul>
+            <p>
+              För att avboka, ring oss på <a href="tel:08-76543210" className="text-primary hover:underline">08-765 432 10</a> eller 
+              skicka ett SMS till samma nummer.
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* About Dialog */}
+      <Dialog open={aboutOpen} onOpenChange={setAboutOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <div className="flex items-center gap-3">
+              <Info className="h-6 w-6 text-primary" />
+              <DialogTitle>Om Studio Elegance</DialogTitle>
+            </div>
+          </DialogHeader>
+          <div className="space-y-4 mt-4 text-muted-foreground">
+            <p>
+              Studio Elegance grundades 2009 med en vision att skapa en salong där varje besök 
+              känns som en lyxupplevelse. Vi kombinerar traditionellt hantverk med moderna tekniker.
+            </p>
+            <p>
+              Vårt team består av passionerade stylister med internationell erfarenhet och kontinuerlig 
+              utbildning inom de senaste trenderna och teknikerna.
+            </p>
+            <div className="pt-4 border-t border-border">
+              <h4 className="font-semibold text-foreground mb-2">Vi använder</h4>
+              <p className="text-sm">
+                Endast högkvalitativa och miljövänliga produkter från Oribe, Kerastase och Kevin Murphy.
+              </p>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Footer */}
       <footer className="bg-foreground text-background py-12">
         <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-4 gap-8">
             <div>
               <h3 className="text-xl font-bold">Studio Elegance</h3>
               <p className="mt-2 text-background/70 text-sm">Din destination för skönhet och välmående</p>
@@ -503,6 +638,15 @@ const SalonDemo = () => {
               <p className="text-sm text-background/70">Mån-Fre: 10:00-19:00</p>
               <p className="text-sm text-background/70">Lör: 10:00-16:00</p>
               <p className="text-sm text-background/70">Sön: Stängt</p>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-3">Information</h4>
+              <ul className="space-y-2 text-sm text-background/70">
+                <li><button onClick={() => setAboutOpen(true)} className="hover:text-background">Om oss</button></li>
+                <li><button onClick={() => setGiftCardOpen(true)} className="hover:text-background">Presentkort</button></li>
+                <li><button onClick={() => setCancellationOpen(true)} className="hover:text-background">Avbokningspolicy</button></li>
+                <li><button onClick={openBooking} className="hover:text-background">Boka tid</button></li>
+              </ul>
             </div>
             <div>
               <h4 className="font-semibold mb-3">Kontakt</h4>
