@@ -3,6 +3,22 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      // Handle GitHub Pages SPA redirect
+      (function() {
+        var redirect = sessionStorage.getItem('redirect');
+        if (redirect) {
+          sessionStorage.removeItem('redirect');
+          window.history.replaceState(null, null, redirect);
+        } else {
+          var p = new URLSearchParams(window.location.search).get('p');
+          if (p) {
+            sessionStorage.setItem('redirect', p);
+            window.location.replace(window.location.pathname.replace(/\/$/, '') + p);
+          }
+        }
+      })();
+    </script>
     <!-- TODO: Set the document title to the name of your application -->
     <title>Lovable App</title>
     <meta name="description" content="Lovable Generated Project" />
