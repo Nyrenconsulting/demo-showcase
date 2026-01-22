@@ -12,12 +12,14 @@ import ConsultantDemo from "./pages/demos/ConsultantDemo";
 
 const queryClient = new QueryClient();
 
+const basename = import.meta.env.PROD ? "/demo-showcase" : "/";
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter basename="/demo-showcase">
+      <BrowserRouter basename={basename}>
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/demo/restaurant" element={<RestaurantDemo />} />
