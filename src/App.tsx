@@ -12,7 +12,8 @@ import ConsultantDemo from "./pages/demos/ConsultantDemo";
 
 const queryClient = new QueryClient();
 
-const basename = import.meta.env.PROD ? "/demo-showcase" : "/";
+// Dynamic basename: use /demo-showcase on github.io subpath, otherwise root
+const basename = window.location.pathname.startsWith("/demo-showcase") ? "/demo-showcase" : "/";
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
