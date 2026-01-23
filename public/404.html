@@ -6,8 +6,9 @@
   <script>
     // Single Page App redirect for GitHub Pages
     // Converts the path to a query parameter and redirects to index.html
-    var pathSegmentsToKeep = 1; // Keep /demo-showcase/
     var l = window.location;
+    // Dynamic: keep 1 segment for /demo-showcase/, 0 for custom domain root
+    var pathSegmentsToKeep = l.pathname.indexOf('/demo-showcase') === 0 ? 1 : 0;
     var path = l.pathname.split('/').slice(pathSegmentsToKeep + 1).join('/');
     var search = l.search;
     var hash = l.hash;
