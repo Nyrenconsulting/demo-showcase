@@ -77,7 +77,7 @@ const Index = () => {
       <footer className="border-t border-border py-12">
         <div className="container mx-auto px-4">
           <div className="flex flex-col items-center gap-6">
-            <span className="text-lg font-semibold text-foreground">Nyrén Consulting</span>
+            <span className="text-lg font-semibold text-foreground">Nyrén Software Design</span>
             <div className="flex items-center gap-4">
               <a
                 href="mailto:max@nyrenconsulting.se"
