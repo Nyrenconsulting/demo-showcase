@@ -80,14 +80,14 @@ const Index = () => {
             <span className="text-lg font-semibold text-foreground">Nyrén Software Design</span>
             <div className="flex items-center gap-4">
               <a
-                href="mailto:max@nyrenconsulting.se"
+                href="mailto:max@nyrensoftwaredesign.se"
                 className="inline-flex items-center justify-center gap-2 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
               >
                 <Mail className="h-4 w-4" />
                 Email
               </a>
               <a
-                href="https://www.instagram.com/nyrenconsulting/"
+                href="https://www.instagram.com/nyrensoftwaredesign/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
